@@ -4,6 +4,7 @@ import { resolve } from 'path'
 
 import { read } from './config'
 import register from './events/conn'
+import cmds from './cmds'
 
 var config
 const configPath = resolve(__dirname, '..', 'config.toml')
@@ -25,6 +26,12 @@ const bot = new Eris.CommandClient(
 )
 
 register(bot)
+
+for (const [name, factory] of Object.entries(cmds)) {
+  const cmd = factory(bot)
+  const args = Array.isArray(cmd) ? cmd : [cmd]
+  bot.registerCommand(name, ...args)
+}
 
 bot.unregisterCommand('help')
 bot.registerCommand('ping', 'pong')
